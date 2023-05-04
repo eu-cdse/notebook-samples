@@ -1,0 +1,58 @@
+# Workflow to test CDSE notebook samples
+
+name: test-samples
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "test"
+  test:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Login to CloudFerro Docker registry
+      - name: Docker Login
+        uses: docker/login-action@v2.1.0
+        with:
+          registry: registry-public.cloudferro.com
+          username: ${{ secrets.CF_REGISTRY_USERNAME }}
+          password: ${{ secrets.CF_REGISTRY_PASSWORD }}
+          # Specifies whether the given registry is ECR (auto, true or false)
+          ecr: false
+          # Log out from the Docker registry at the end of a job
+          logout: true
+      - name: Start JupyterLab container
+        run: |
+          container_id=`docker run -v $GITHUB_WORKSPACE:/home/jovyan/samples -d --rm registry-public.cloudferro.com/jupyterhub/vito/lab:20230426-27`
+          echo Started container ${container_id}
+          echo Waiting for jupyterlab to start ... 
+          sleep 60
+          echo "container_id=${container_id}" >> "$GITHUB_ENV"
+      - name: Run Sentinelhub tests
+        run: | 
+          $GITHUB_WORKSPACE/test-samples.sh sentinelhub ${{ env.container_id }}
+      - name: Run OpenEO tests
+        run: | 
+          $GITHUB_WORKSPACE/test-samples.sh openeo ${{ env.container_id }}
+      - name: Run geo tests
+        run: | 
+          $GITHUB_WORKSPACE/test-samples.sh geo ${{ env.container_id }}
+      - name: Stop JupyterLab container
+        run: |
+          docker stop ${{ env.container_id }}
