@@ -39,7 +39,12 @@ jobs:
           logout: true
       - name: Start JupyterLab container
         run: |
-          container_id=`docker run -v $GITHUB_WORKSPACE:/home/jovyan/samples -d --rm registry.cloudferro.com/vito/jupyterhub:rc-87841`
+          container_id=`docker run -v $GITHUB_WORKSPACE:/home/jovyan/samples \
+                        --env="OPENEO_AUTH_METHOD=client_credentials" \
+                        --env="OPENEO_AUTH_CLIENT_ID=openeo-cdse-ci-service-account" \
+                        --env="OPENEO_AUTH_CLIENT_SECRET=Ltd1qSXhdTilWmH8Eq5pj3QGFKx4EVAI" \
+                        --env="OPENEO_AUTH_PROVIDER_ID=CDSE" \
+                        -d --rm registry.cloudferro.com/vito/jupyterhub:rc-87841`
           echo Started container ${container_id}
           echo Waiting for jupyterlab to start ... 
           sleep 60
