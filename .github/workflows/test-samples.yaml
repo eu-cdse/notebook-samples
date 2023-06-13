@@ -30,7 +30,7 @@ jobs:
       - name: Docker Login
         uses: docker/login-action@v2.1.0
         with:
-          registry: registry-public.cloudferro.com
+          registry: registry.cloudferro.com
           username: ${{ secrets.CF_REGISTRY_USERNAME }}
           password: ${{ secrets.CF_REGISTRY_PASSWORD }}
           # Specifies whether the given registry is ECR (auto, true or false)
@@ -39,7 +39,7 @@ jobs:
           logout: true
       - name: Start JupyterLab container
         run: |
-          container_id=`docker run -v $GITHUB_WORKSPACE:/home/jovyan/samples -d --rm registry-public.cloudferro.com/jupyterhub/vito/lab:20230426-27`
+          container_id=`docker run -v $GITHUB_WORKSPACE:/home/jovyan/samples -d --rm registry.cloudferro.com/jupyterhub/vito/rc-87841`
           echo Started container ${container_id}
           echo Waiting for jupyterlab to start ... 
           sleep 60
