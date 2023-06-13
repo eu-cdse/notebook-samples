@@ -39,7 +39,7 @@ jobs:
           logout: true
       - name: Start JupyterLab container
         run: |
-          container_id=`docker run -v $GITHUB_WORKSPACE:/home/jovyan/samples -d --rm registry.cloudferro.com/jupyterhub/vito/rc-87841`
+          container_id=`docker run -v $GITHUB_WORKSPACE:/home/jovyan/samples -d --rm registry.cloudferro.com/vito/jupyterhub:rc-87841`
           echo Started container ${container_id}
           echo Waiting for jupyterlab to start ... 
           sleep 60
