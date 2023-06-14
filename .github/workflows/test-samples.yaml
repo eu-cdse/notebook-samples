@@ -39,6 +39,7 @@ jobs:
           logout: true
       - name: Start JupyterLab container
         run: |
+          rm -rf $GITHUB_WORKSPACE/openeo/output
           container_id=`docker run -v $GITHUB_WORKSPACE:/home/jovyan/samples \
                         --env="OPENEO_AUTH_METHOD=client_credentials" \
                         --env="OPENEO_AUTH_CLIENT_ID=openeo-cdse-ci-service-account" \
@@ -51,13 +52,13 @@ jobs:
           echo "container_id=${container_id}" >> "$GITHUB_ENV"
       - name: Run Sentinelhub tests
         run: | 
-          $GITHUB_WORKSPACE/test-samples.sh sentinelhub ${{ env.container_id }}
+          $GITHUB_WORKSPACE/.test-samples.sh sentinelhub ${{ env.container_id }}
       - name: Run OpenEO tests
         run: | 
-          $GITHUB_WORKSPACE/test-samples.sh openeo ${{ env.container_id }}
+          $GITHUB_WORKSPACE/.test-samples.sh openeo ${{ env.container_id }}
       - name: Run geo tests
         run: | 
-          $GITHUB_WORKSPACE/test-samples.sh geo ${{ env.container_id }}
+          $GITHUB_WORKSPACE/.test-samples.sh geo ${{ env.container_id }}
       - name: Stop JupyterLab container
         run: |
           docker stop ${{ env.container_id }}
