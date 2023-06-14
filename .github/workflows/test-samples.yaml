@@ -39,6 +39,8 @@ jobs:
           logout: true
       - name: Start JupyterLab container
         run: |
+          id
+          ls -al $GITHUB_WORKSPACE
           chmod -R 666 $GITHUB_WORKSPACE
           container_id=`docker run -v $GITHUB_WORKSPACE:/home/jovyan/samples \
                         --env="OPENEO_AUTH_METHOD=client_credentials" \
