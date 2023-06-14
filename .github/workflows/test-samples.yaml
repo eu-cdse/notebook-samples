@@ -39,7 +39,7 @@ jobs:
           logout: true
       - name: Start JupyterLab container
         run: |
-          rm -rf $GITHUB_WORKSPACE/openeo/output
+          chmod -R 666 $GITHUB_WORKSPACE
           container_id=`docker run -v $GITHUB_WORKSPACE:/home/jovyan/samples \
                         --env="OPENEO_AUTH_METHOD=client_credentials" \
                         --env="OPENEO_AUTH_CLIENT_ID=openeo-cdse-ci-service-account" \
