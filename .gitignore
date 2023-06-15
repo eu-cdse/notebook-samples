@@ -1,2 +1,3 @@
 *.tiff
 *.json
+.ipynb_checkpoints
