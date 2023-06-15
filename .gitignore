@@ -182,4 +182,5 @@ pyrightconfig.json
 *.tiff
 *.geotiff
 *.aux.xml
+*.nc
 output/
