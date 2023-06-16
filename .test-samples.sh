@@ -12,7 +12,7 @@ if [ -f "${tests_file}" ]; then
   do
     echo "Running ${sample} at $(date)"
     if ! docker exec "${container_id}" jupyter nbconvert --to notebook --execute "/home/jovyan/samples/${kernel}/${sample}" \
-                     --stdout --ExecutePreprocessor.kernel_name="${kernel}" --ExecutePreprocessor.timeout=3600;
+                     --ExecutePreprocessor.kernel_name="${kernel}" --ExecutePreprocessor.timeout=3600;
     then
       failed=true
       echo "Sample ${sample} FAILED at $(date)"
