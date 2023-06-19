@@ -55,6 +55,12 @@ jobs:
           sleep 60
           echo "container_id=${container_id}" >> "$GITHUB_ENV"
 
+      - name: Install pre-commit
+        run: pip install pre-commit
+
+      - name: Apply pre-commit hooks
+        run: pre-commit run --all-files --show-diff-on-failure
+
       - name: Run Sentinelhub tests
         run: | 
           $GITHUB_WORKSPACE/.test-samples.sh sentinelhub ${{ env.container_id }}
