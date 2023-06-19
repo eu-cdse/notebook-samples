@@ -55,6 +55,11 @@ jobs:
           sleep 60
           echo "container_id=${container_id}" >> "$GITHUB_ENV"
 
+      - name: Install black and jupyter_black
+        run: |
+          pip install black
+          pip install jupyter_black
+
       - name: Format python file with black
         run: |
           black .
