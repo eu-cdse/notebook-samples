@@ -3,3 +3,4 @@ xarray>=2022.03.0
 matplotlib>=3.0.0
 netCDF4>=1.6.0
 black
+jupyter_black .

@@ -58,6 +58,7 @@ jobs:
       - name: Format code with black
         run: |
           black .
+          jupyter_black .
       - name: Run Sentinelhub tests
         run: | 
           $GITHUB_WORKSPACE/.test-samples.sh sentinelhub ${{ env.container_id }}
