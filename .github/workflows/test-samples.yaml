@@ -55,10 +55,13 @@ jobs:
           sleep 60
           echo "container_id=${container_id}" >> "$GITHUB_ENV"
 
-      - name: Format code with black
+      - name: Format python file with black
         run: |
           black .
+      - name: Format Jupyter notebooks with jupyter_black
+        run: |
           jupyter_black .
+
       - name: Run Sentinelhub tests
         run: | 
           $GITHUB_WORKSPACE/.test-samples.sh sentinelhub ${{ env.container_id }}
