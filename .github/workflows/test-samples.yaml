@@ -54,6 +54,10 @@ jobs:
           echo Waiting for jupyterlab to start ... 
           sleep 60
           echo "container_id=${container_id}" >> "$GITHUB_ENV"
+
+      - name: Format code with black
+        run: |
+          black .
       - name: Run Sentinelhub tests
         run: | 
           $GITHUB_WORKSPACE/.test-samples.sh sentinelhub ${{ env.container_id }}
