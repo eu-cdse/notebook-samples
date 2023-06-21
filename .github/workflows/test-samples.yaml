@@ -42,6 +42,7 @@ jobs:
           # Log out from the Docker registry at the end of a job
           logout: true
       - name: Start JupyterLab container
+        id: start-jupyterlab-container
         run: |
           chmod -R 0777 $GITHUB_WORKSPACE
           container_id=`docker run -v $GITHUB_WORKSPACE:/home/jovyan/samples \
@@ -60,12 +61,15 @@ jobs:
           echo "container_id=${container_id}" >> "$GITHUB_ENV"
 
       - name: Run Sentinelhub tests
+        if: steps.start-jupyterlab-container.outcome == 'success'
         run: | 
           $GITHUB_WORKSPACE/.test-samples.sh sentinelhub ${{ env.container_id }}
       - name: Run OpenEO tests
+        if: steps.start-jupyterlab-container.outcome == 'success'
         run: | 
           $GITHUB_WORKSPACE/.test-samples.sh openeo ${{ env.container_id }}
       - name: Run geo tests
+        if: steps.start-jupyterlab-container.outcome == 'success'
         run: | 
           $GITHUB_WORKSPACE/.test-samples.sh geo ${{ env.container_id }}
       - name: Stop JupyterLab container
