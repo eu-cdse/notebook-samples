@@ -45,6 +45,8 @@ jobs:
         run: |
           chmod -R 0777 $GITHUB_WORKSPACE
           container_id=`docker run -v $GITHUB_WORKSPACE:/home/jovyan/samples \
+                        --env="SH_CLIENT_ID=${{ secrets.SH_CLIENT_ID }}" \
+                        --env="SH_CLIENT_SECRET=${{ secrets.SH_CLIENT_SECRET }}" \
                         --env="OPENEO_AUTH_METHOD=client_credentials" \
                         --env="OPENEO_AUTH_CLIENT_ID=${{ secrets.OPENEO_AUTH_CLIENT_ID }}" \
                         --env="OPENEO_AUTH_CLIENT_SECRET=${{ secrets.OPENEO_AUTH_CLIENT_SECRET }}" \
