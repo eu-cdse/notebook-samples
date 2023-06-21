@@ -45,13 +45,15 @@ jobs:
         run: |
           chmod -R 0777 $GITHUB_WORKSPACE
           container_id=`docker run -v $GITHUB_WORKSPACE:/home/jovyan/samples \
+                        --env="CDSE_USERNAME=${{ secrets.CDSE_USERNAME }}" \
+                        --env="CDSE_PASSWORD=${{ secrets.CDSE_PASSWORD }}" \
                         --env="SH_CLIENT_ID=${{ secrets.SH_CLIENT_ID }}" \
                         --env="SH_CLIENT_SECRET=${{ secrets.SH_CLIENT_SECRET }}" \
                         --env="OPENEO_AUTH_METHOD=client_credentials" \
                         --env="OPENEO_AUTH_CLIENT_ID=${{ secrets.OPENEO_AUTH_CLIENT_ID }}" \
                         --env="OPENEO_AUTH_CLIENT_SECRET=${{ secrets.OPENEO_AUTH_CLIENT_SECRET }}" \
                         --env="OPENEO_AUTH_PROVIDER_ID=CDSE" \
-                        -d --rm registry.cloudferro.com/vito/jupyterhub:rc-89081`
+                        -d --rm registry.cloudferro.com/vito/jupyterhub:rc-89266`
           echo Started container ${container_id}
           echo Waiting for jupyterlab to start ... 
           sleep 60
