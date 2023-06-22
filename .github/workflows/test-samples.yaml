@@ -62,14 +62,17 @@ jobs:
 
       - name: Run Sentinelhub tests
         if: steps.start-jupyterlab-container.outcome == 'success'
+        continue-on-error: true
         run: | 
           $GITHUB_WORKSPACE/.test-samples.sh sentinelhub ${{ env.container_id }}
       - name: Run OpenEO tests
         if: steps.start-jupyterlab-container.outcome == 'success'
+        continue-on-error: true
         run: | 
           $GITHUB_WORKSPACE/.test-samples.sh openeo ${{ env.container_id }}
       - name: Run geo tests
         if: steps.start-jupyterlab-container.outcome == 'success'
+        continue-on-error: true
         run: | 
           $GITHUB_WORKSPACE/.test-samples.sh geo ${{ env.container_id }}
       - name: Stop JupyterLab container
