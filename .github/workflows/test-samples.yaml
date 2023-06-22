@@ -23,6 +23,7 @@ jobs:
   test:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -62,17 +63,14 @@ jobs:
 
       - name: Run Sentinelhub tests
         if: steps.start-jupyterlab-container.outcome == 'success'
-        continue-on-error: true
         run: | 
           $GITHUB_WORKSPACE/.test-samples.sh sentinelhub ${{ env.container_id }}
       - name: Run OpenEO tests
         if: steps.start-jupyterlab-container.outcome == 'success'
-        continue-on-error: true
         run: | 
           $GITHUB_WORKSPACE/.test-samples.sh openeo ${{ env.container_id }}
       - name: Run geo tests
         if: steps.start-jupyterlab-container.outcome == 'success'
-        continue-on-error: true
         run: | 
           $GITHUB_WORKSPACE/.test-samples.sh geo ${{ env.container_id }}
       - name: Stop JupyterLab container
