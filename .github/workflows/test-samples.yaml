@@ -73,5 +73,6 @@ jobs:
         run: | 
           $GITHUB_WORKSPACE/.test-samples.sh geo ${{ env.container_id }}
       - name: Stop JupyterLab container
+        if: success() || failure()
         run: |
           docker stop ${{ env.container_id }}
