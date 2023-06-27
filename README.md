@@ -32,13 +32,5 @@ Once the pre-commit package is installed, you can set up the pre-commit hooks de
 
 The pre-commit hooks will now run automatically before each commit, checking the code for any style violations and automatically formatting it if needed.
 
-## Jupyter Plugins for Cell Conversion
 
-This repository supports Jupyter notebooks for interactive code execution and documentation. To enhance your notebook editing experience, we recommend using Jupyter plugins that provide cell conversion functionality. These plugins allow you to convert code cells to markdown cells and vice versa, providing flexibility in documentation and code execution.
 
-## Recommended Plugins
-We suggest the following Jupyter plugins for cell conversion:
-
-1. Jupyter Notebook: The Jupyter Notebook interface provides built-in functionality for converting cells. You can use the toolbar options or keyboard shortcuts to convert code cells to markdown and vice versa. Refer to the [Jupyter Notebook documentation](https://jupyter-notebook.readthedocs.io/en/stable/) for more details.
-
-2. jupyter_contrib_nbextensions: This plugin extends the capabilities of Jupyter Notebook by providing a collection of useful extensions, including cell conversion options. 
