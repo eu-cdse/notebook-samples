@@ -60,10 +60,6 @@ jobs:
           sleep 60
           echo "container_id=${container_id}" >> "$GITHUB_ENV"
 
-      - name: Check code style with Black
-        run: |
-          black --check .
-
       - name: Run Sentinelhub tests
         if: success() || failure()
         run: |
