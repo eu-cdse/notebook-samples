@@ -1,26 +1,18 @@
-# Workflow to check python formatting
+# Workflow to check Python code formatting
 
-name: Black-action
-
-# Triggers the workflow on push or pull request events on any branch
+name: Python linting
 
 on: [push, pull_request]
 
-#create a job
 jobs:
   lint:
-  # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
         uses: actions/checkout@v3
-      #  Install black 
       - name: Install black
         run: |
-          pip install black
-    # check for 
+          pip install black[jupyter]
       - name: Check code style with Black
         run: |
           black --check .
