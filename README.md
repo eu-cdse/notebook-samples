@@ -1,24 +1,33 @@
-# Copernicus Data Space Ecosystem notebook samples
+# Copernicus Data Space Ecosystem: sample notebooks
 
-This repository contains Jupyter notebook samples for the Copernicus Data Space Ecosystem.
-Notebook samples are grouped per kernel (sentinelhub, openeo and geo).
+This repository contains sample Jupyter notebooks for the Copernicus Data Space Ecosystem.
 
-## Automated testing
+Notebooks are grouped per kernel: `sentinelhub`, `openeo` and `geo`.
+
+
+## Contributor tips
+
+### Automated testing
+
 If you want your sample to be automatically tested, add it to the `.tests` file. A GitHub action will pull the
 Jupyterlab container and automatically test the listed notebook samples.
 
-## Pre-commit Hooks recommendation for contributor
 
-To ensure consistent code style and formatting in this repository, we recommend setting up pre-commit hooks. These hooks automatically run code checks and formatting before each commit, helping maintain a clean and consistent codebase.
+### Pre-commit hook
 
-To install the pre-commit hooks, make sure you have Python and pip installed on your system. Run the following command to install the necessary packages:
+To ensure a consistent code style and formatting in this repository,
+we use the [the black code formatter](https://black.readthedocs.io/en/stable/).
 
-`pip install pre-commit`
+We recommend to set up a (git) pre-commit hook,
+to automatically run code checks and apply formatting tweaks before each commit.
 
-Once the pre-commit package is installed, you can set up the pre-commit hooks defined in this repository.
+-   [Install pre-commit](https://pre-commit.com/#installation) on your system,
+    for example directly in your development environment with
 
-Run  `pre-commit install`
+        pip install pre-commit
 
-This command installs the pre-commit hooks defined in the .pre-commit-config.yaml file located in the root directory of the repository.
+-   Install the pre-commit git hook defined by the `.pre-commit-config.yaml` config of this repository:
+
+        pre-commit install
 
 The pre-commit hooks will now run automatically before each commit, checking the code for any style violations and automatically formatting it if needed.
