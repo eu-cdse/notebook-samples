@@ -1,4 +1,0 @@
-openeo>=0.18.0
-xarray>=2022.03.0
-matplotlib>=3.0.0
-netCDF4>=1.6.0
