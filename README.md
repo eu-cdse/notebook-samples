@@ -7,11 +7,31 @@ Notebooks are grouped per kernel: `sentinelhub`, `openeo` and `geo`.
 
 ## Contributor tips
 
+### Kernel spec metadata
+
+In case of editing the notebook samples outside the Copernicus Data Space Ecosystem Jupyter notebooks service, make 
+sure to update the kernel spec (`metadata.kernelspec.name`) before pushing, otherwise the sample will be loaded with the wrong kernel:
+* for Sentinelhub kernels, use `sentinelhub`
+* for OpenEO samples, use `openeo`
+* for generic Geo science kernels, use `geo`
+
+E.g. for OpenEO:
+
+    ...
+    "metadata": {
+      "kernelspec": {
+        "display_name": "OpenEO",
+        "language": "python",
+        "name": "openeo"
+      },
+    ...
+
 ### Automated testing
 
 If you want your sample to be automatically tested, add it to the `.tests` file. A GitHub action will pull the
 Jupyterlab container and automatically test the listed notebook samples.
 
+Mind that in case of automated testing samples can't depend on interactive input, like specifying user credentials.
 
 ### Pre-commit hook
 
