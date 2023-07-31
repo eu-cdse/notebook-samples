@@ -61,6 +61,8 @@ def main():
         print(f"Found {len(issues)} kernel spec issues:")
         print("\n".join(issues))
         sys.exit(1)
+    else:
+        print("No issues")
 
 
 if __name__ == "__main__":
