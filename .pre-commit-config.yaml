@@ -14,3 +14,10 @@ repos:
     hooks:
     -   id: black
     -   id: black-jupyter
+-   repo: local
+    hooks:
+    -   id: check_kernelspec
+        name: check_kernelspec
+        entry: python tests/check_kernelspec.py
+        language: system
+        files: \.ipynb
