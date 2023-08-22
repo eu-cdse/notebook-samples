@@ -1,4 +1,4 @@
-process_request.ipynb
-lake_ice_monitoring.ipynb
-pollution.ipynb
+data_download_process_request.ipynb
+ice_monitoring.ipynb
+mapping_no2_pollution.ipynb
 migration_from_scihub_guide.ipynb
