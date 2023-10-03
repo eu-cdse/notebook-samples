@@ -1,5 +1,5 @@
 """
-Utilities used by example notebooks
+Utility functions used by example notebooks
 """
 from typing import Any, Optional, Tuple
 
