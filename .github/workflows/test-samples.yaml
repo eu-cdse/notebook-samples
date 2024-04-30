@@ -54,7 +54,7 @@ jobs:
                         --env="OPENEO_AUTH_CLIENT_ID=${{ secrets.OPENEO_AUTH_CLIENT_ID }}" \
                         --env="OPENEO_AUTH_CLIENT_SECRET=${{ secrets.OPENEO_AUTH_CLIENT_SECRET }}" \
                         --env="OPENEO_AUTH_PROVIDER_ID=CDSE" \
-                        -d --rm registry.cloudferro.com/vito/jupyterhub:releaseCandidate-149211`
+                        -d --rm registry.cloudferro.com/vito/jupyterhub:releaseCandidate-200614`
           echo Started container ${container_id}
           echo Waiting for jupyterlab to start ... 
           sleep 60
