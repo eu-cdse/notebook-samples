@@ -10,7 +10,7 @@ _log = logging.getLogger("check_kernel")
 
 
 def collect_notebooks(
-    paths: Optional[Iterable[Union[str, Path]]] = None
+    paths: Optional[Iterable[Union[str, Path]]] = None,
 ) -> Iterator[Path]:
     paths = [Path(p) for p in (paths or ["."])]
     for path in paths:
