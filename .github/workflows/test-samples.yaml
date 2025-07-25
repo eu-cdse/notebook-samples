@@ -59,6 +59,10 @@ jobs:
           echo Waiting for jupyterlab to start ... 
           sleep 60
           echo "container_id=${container_id}" >> "$GITHUB_ENV"
+      - name: Run geo tests
+        if: success() || failure()
+        run: | 
+          $GITHUB_WORKSPACE/.test-samples.sh geo ${{ env.container_id }}
       - name: Run Sentinelhub tests
         if: success() || failure()
         run: | 
@@ -67,10 +71,6 @@ jobs:
         if: success() || failure()
         run: | 
           $GITHUB_WORKSPACE/.test-samples.sh openeo ${{ env.container_id }}
-      - name: Run geo tests
-        if: success() || failure()
-        run: | 
-          $GITHUB_WORKSPACE/.test-samples.sh geo ${{ env.container_id }}
       - name: Stop JupyterLab container
         if: success() || failure()
         run: |
