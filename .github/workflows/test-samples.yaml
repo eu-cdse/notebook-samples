@@ -48,6 +48,8 @@ jobs:
           container_id=`docker run -v $GITHUB_WORKSPACE:/home/jovyan/samples \
                         --env="CDSE_USERNAME=${{ secrets.CDSE_USERNAME }}" \
                         --env="CDSE_PASSWORD=${{ secrets.CDSE_PASSWORD }}" \
+                        --env="CDSE_S3_ACCESS_KEY=${{ secrets.CDSE_S3_ACCESS_KEY }}" \
+                        --env="CDSE_S3_SECRET_KEY=${{ secrets.CDSE_S3_SECRET_KEY }}" \
                         --env="SH_CLIENT_ID=${{ secrets.SH_CLIENT_ID }}" \
                         --env="SH_CLIENT_SECRET=${{ secrets.SH_CLIENT_SECRET }}" \
                         --env="OPENEO_AUTH_METHOD=client_credentials" \
