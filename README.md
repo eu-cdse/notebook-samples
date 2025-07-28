@@ -9,7 +9,7 @@ Notebooks are grouped per kernel: `sentinelhub`, `openeo` and `geo`.
 
 ### Kernel spec metadata
 
-In case of editing the notebook samples outside the Copernicus Data Space Ecosystem Jupyter notebooks service, make 
+In case of editing the notebook samples outside the Copernicus Data Space Ecosystem Jupyter notebooks service, make
 sure to update the kernel spec (`metadata.kernelspec.name`) before pushing, otherwise the sample will be loaded with the wrong kernel:
 * for Sentinelhub kernels, use `sentinelhub`
 * for OpenEO samples, use `openeo`
