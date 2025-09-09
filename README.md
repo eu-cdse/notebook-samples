@@ -13,7 +13,7 @@ When contributing changes to the samples, please review the following checklist 
 - Kernel spec metadata was correctly set (check_kernelspec action)
 - Tests pass (test-samples action)
 - Code is formatted and linted (Python linting action)
-- If applicable, documentation has been updated to reflect changes (test)
+- If applicable, documentation has been updated to reflect changes
 
 Extra information about each check can be found below.
 
