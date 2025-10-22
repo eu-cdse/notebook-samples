@@ -4,7 +4,7 @@ The notebooks in this repository give a solid intro to evalscripts.
 
 To be able to follow along well in these notebooks a few requirements are necessary:
 
-- [Basic Knowledge of Remote Sensing](https://university.planet.com/introduction-to-remote-sensing)
+- [Basic Knowledge of Remote Sensing](https://business.esa.int/newcomers-earth-observation-guide)
   - Sensors
   - Spectral Bands
   - Indices
