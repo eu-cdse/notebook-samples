@@ -44,8 +44,8 @@ Jupyterlab container and automatically test the listed notebook samples.
 Mind that in case of automated testing samples can't depend on interactive input, like specifying user credentials. If you need
 credentials to run the notebook, please notify one of the admins.
 
-If you encounter certain notebook samples in the testing pipeline that are failing that were not changed in your pull request. 
-Please notify the owner of the sample. 
+If you encounter certain notebook samples in the testing pipeline that are failing that were not changed in your pull request.
+Please notify the owner of the sample.
 
 
 ### Pre-commit hook
