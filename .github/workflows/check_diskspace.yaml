@@ -1,0 +1,12 @@
+name: Debug Runner Disk Space
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check disk usage
+        run: df -h
