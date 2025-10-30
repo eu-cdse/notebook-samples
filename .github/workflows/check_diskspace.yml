@@ -8,14 +8,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check disk usage
-        run:     echo "Before cleanup:"
-                  df -h
-                  sudo rm -rf /usr/share/dotnet
-                  sudo rm -rf /opt/ghc
-                  sudo rm -rf /usr/local/share/boost
-                  sudo rm -rf /usr/local/lib/android
-                  sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-                  docker system prune -af
-                  echo "After cleanup:"
-                  df -h
+      - name: Free up disk space
+        run: |
+          echo "Before cleanup:"
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          docker system prune -af
+          echo "After cleanup:"
+          df -h
