@@ -32,11 +32,7 @@ def extract_kernel_spec(notebook: Path) -> dict:
 def main():
     logging.basicConfig(level=logging.INFO)
 
-    supported_kernels = [
-        "openeo",
-        "sentinelhub",
-        "geo",
-    ]
+    supported_kernels = ["openeo", "sentinelhub", "geo", "snap"]
 
     checked = 0
     issues = []

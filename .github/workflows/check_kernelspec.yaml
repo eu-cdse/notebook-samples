@@ -3,6 +3,7 @@ name: Check notebook kernelspec metadata
 
 on: [push, pull_request]
 
+
 jobs:
   check_kernelspec:
     runs-on: ubuntu-latest
