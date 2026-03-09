@@ -66,3 +66,7 @@ to automatically run code checks and apply formatting tweaks before each commit.
         pre-commit install
 
 The pre-commit hooks will now run automatically before each commit, checking the code for any style violations and automatically formatting it if needed.
+
+
+### Other best practices
+When S3 credentials are needed for your notebook to access data from CDSE, try to use the CDSE_S3_ACCESS_KEY and CDSE_S3_SECRET_KEY environment variables for authentication when possible. This not only makes it clearer for users that they need to set up these environment variables before running the notebook, but also improves transparency on where and how credentials are used in the code.
