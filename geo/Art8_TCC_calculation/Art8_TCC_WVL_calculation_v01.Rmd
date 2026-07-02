@@ -1,0 +1,414 @@
+---
+title: "NRR - Art. 8 Urban Tree Canopy Cover calculation using Woody Vegetation Layer"
+author:
+    - name: "Karl Ruf"
+      email: "ruf@space4environment.com"
+    - name: "Luis Cadahía"
+      email: "Luis.CADAHIA-LORENZO@ec.europa.eu"
+output:
+  html_document:
+    df_print: paged
+include-in-header: true
+affiliation: "European Topic Centre - Data integration and digitalisation (ETC-DI) | Joint Research Centre (JRC)"
+date: "2026-06-08"
+license: "CC-BY-4.0"
+---
+
+# Overview
+
+This notebook presents a follow through example for the calculation of the Nature Restoration Regulation Article 8 Tree Canopy Cover (TCC) indicator using the designated Copernicus alternative - the **Woody Vegetation Layer (WVL)**.
+
+The example shows how to calculate the TCC indicator using the WVL layer for two possible Urban Ecosystem Area (UEA) definitions using (a) Local Administrative Units (LAU) classified as "Cities" as well as "Towns and suburbs" and (b) Urban centres and Urban clusters inside LAU´s classified as "Cities as well as "Towns and suburbs" for the example country of Luxembourg. 
+
+Based on the regulation both calculations thereby refer to the maximum (a) and minimum (b) potentially possible reference area designation.
+
+## General workflow
+
+The calculation process features the following sequential steps:
+
+1. Merging the urban centres and urban clusters.
+2. Preparing the LAU vector layer:
+  + Filtering the LAU by country and 
+  + Joining the degree of urbanisation and extracting classes cities (1) as well as towns and suburbs (2).
+  + Computing area of urban centres and clusters within the LAU. 
+3. Masking the WVL.
+4. Computing the TCC for (a) the entire LAU and (b) the urban centres and clusters within the LAU.
+
+## Input data
+
+For calculation of the indicator we require 5 datasets
+
+| Dataset Name | Datatype | Scale / Resolution | Description |
+|--------------|----------|-------------------|-------------|
+| [Local Administrative Units](https://ec.europa.eu/eurostat/web/gisco/geodata/statistical-units/local-administrative-units) | Vector | 1:1M | Geospatial Local Administrative Units (LAU) to be combined with the 2024 classified EUROSTAT’s degree of urbanisation typology [LAU DEGURBA tabular list](https://ec.europa.eu/eurostat/web/nuts/local-administrative-units). Note this is the public version of the geospatial LAU at scale 1:1M; the internal 1:100,000 version can be requested by country representatives from Eurostat directly or downloaded from the [NRP Reportnet 3 dataflow](https://reportnet.europa.eu/dataflow/1906) in the 'Dataflow help' section. |
+| [Urban centres](https://ec.europa.eu/eurostat/web/gisco/geodata/population-distribution/clusters) | Raster | 1 km | Urban centres and urban clusters are groups of 1 km² population grid cells that share similar characteristics, based on a combination of their population density and geographical contiguity. |
+| [Urban clusters](https://ec.europa.eu/eurostat/web/gisco/geodata/population-distribution/clusters) | Raster | 1 km | Urban centres and urban clusters are groups of 1 km² population grid cells that share similar characteristics, based on a combination of their population density and geographical contiguity. |
+| [Woody Vegetation Layer](https://land.copernicus.eu/en/products/high-resolution-layer-small-landscape-features/woody-vegetation-layer-2021) | Raster | 5 m | Binary mapping of woody vegetation of any type without any differentiation of height, size, or land use. Note the 2021 version may be used for draft NRP. |
+
+
+The WVL can be downloaded as pre-packaged collections for countries or alternatively via an API. For download you will need to authenticate yourself. CLMS Website authentication is handled using EU Login, European Commission’s user authentication service. Please see https://ecas.ec.europa.eu/cas/help.html for further information.
+
+We here use the WVL version with EU coverage to accommodate the option that this script can be applied universally to all Member States.
+
+
+
+```{r setup, include=FALSE}
+
+# Install package manager if needed
+if (!requireNamespace("pacman", quietly = TRUE)) {
+  install.packages("pacman")
+}
+
+# Load required libraries
+pacman::p_load(here, sf, tidyverse, terra, tidyterra, exactextractr, readxl, writexl, htmltools, leaflet)
+
+# Hide terra´s progressing bar
+terraOptions(progress = 0)
+
+
+
+```
+
+
+## 1. Merge urban centres and urban clusters
+
+We will be computing our TCC for the urban centres and urban clusters inside the LAU´s. For this we have to merge the two individual clusters to one common dataset. Throughout the process you will have to update the paths to the datasets specified in "Input data". Below you can specify your 2-digit country code which will set processing extent window that matches your country to obtain national results.
+
+Both raster datasets contain integer values representing the respective population of the contiguous group of cells.
+
+We can thus use simple conditional logic to combine the two layers. Areas with values above 0 in either layer are combined. 
+
+```{r Combine urban centres and clusters, warning=FALSE}
+
+# We start by setting our country 2-digit code and processing extent used reading only the area that we need.
+cc <- 'LU' # Change here. Use EL not GR for Greece. # For oversea territories refer to table below for country code.
+
+# Next we will retrieve the bounding box for the country. 
+# This has been pre-processed from the templates available on ReportNet3.
+# Coordinates were rounded to min/max and dividable by 1000 to match resolution or UC/UC data.
+cntr_bb <- read.csv(here("data", "cntr_raster_template_extents.csv")) %>% 
+  filter(cntr_code == cc) %>% 
+  select(xmin, xmax, ymin, ymax) %>% 
+  as.vector() %>% 
+  unlist() %>% 
+  ext()
+  
+
+# Load high density clusters
+ucentres <- rast(here("data", "population_distribution", "HDENS_CLST_2021.tif"),
+                 win = cntr_bb
+                 )
+
+# Load medium density clusters
+uclusters <- rast(here("data", "population_distribution", "URBAN_CLST_2021.tif"),
+                  win = cntr_bb
+                  )
+
+
+# Merge with using conditional logic
+ucuc <- terra::ifel(ucentres > 0 | uclusters > 0, 1, NA, 
+                        datatype = "INT1U")
+
+
+```
+
+
+```{r UCUC leaflet, warning=FALSE, message=FALSE, echo=FALSE}
+
+# Set to NA as to avoid being displayed as background value
+ucentres[ucentres == 0] <- NA
+uclusters[uclusters == 0] <- NA
+
+leaflet::leaflet() %>% 
+  addProviderTiles(
+    providers$CartoDB.Positron,
+    group = "Basemap"
+  ) %>%
+  
+  addMapPane("clusters", zIndex = 410) %>%
+  addMapPane("centres", zIndex = 420) %>%
+  
+  addRasterImage(
+    ucuc,
+    colors = c("#f03b20", "#0000FF"),
+    opacity = 1,
+    project = TRUE,
+    group = "Combined UCUC"
+  ) %>% 
+  
+    addRasterImage(
+    uclusters,
+    colors = c( "#feb24c"),
+    opacity = 1,
+    project = TRUE,
+    group = "Urban Clusters",
+    options = leafletOptions(pane = "clusters")
+  ) %>% 
+
+  addRasterImage(
+    ucentres,
+    colors = c( "#e31a1c"),
+    opacity = 1,
+    project = TRUE,
+    group = "Urban Centres",
+    options = leafletOptions(pane = "centres")
+  ) %>% 
+  
+  addLayersControl(
+    overlayGroups = c(
+      "Urban Centres",
+      "Urban Clusters",
+      "Combined UCUC"
+    ),
+    options = layersControlOptions(collapsed = FALSE)
+  ) %>% 
+  hideGroup(c("Combined UCUC", "Urban Clusters"))
+
+
+```
+
+
+## 2. Prepare the Local Administrative Units 
+
+We first start with preparing the LAU by filtering those which are either cities (1) or towns and suburbs (2). 
+
+It is up to the countries to define whether 
+
+a. the full LAU area is defined as Urban Ecosystem Area (UEA) or,
+b. only the area of urban centres and clusters within the LAU shall be defined as UEA.
+
+The UEA is the denominator in the calculation of the tree canopy cover. In addition to these two options covered here, countries may also customise the UEA definition by merging neighbouring LAUs or adding a buffer. 
+
+For option a) the UAE is defined directly by the area of the polygon geometry while for b) we need to calculate the urban centres and cluster area within the LAU.
+
+For the latter we use the exact_extract function from the "exactextractr" package (Baston 2023).
+
+This library allows to calculate the coverage fraction, accounting for fractional pixel cover and is thus the most accurate tool for UAE area calculation.
+
+
+```{r LAU preprocessing, warning=FALSE, message=FALSE}
+
+# Create the extraction query for the LAU file
+cntr_query <- paste0(
+    "SELECT * FROM 'LAU_RG_01M_2024_3035.gpkg' WHERE CNTR_CODE = '",
+    cc,
+    "'"
+  )
+
+# Load the LAU´s geometry layer - We can use a query upon load to filter only the national LAU´s
+lau_geom <- st_read(
+                here("data", "LAU_RG_01M_2024_3035.gpkg"),
+                quiet = TRUE,
+                query = cntr_query 
+                )
+
+# Load the respective LAU classification
+degurba <- read_xlsx(
+  here("data", "EU-27-LAU-2024-NUTS-2024.xlsx"), 
+  sheet = cc
+  ) 
+
+
+# We join the Degree of Urbanisation classification to the geometries...
+lau_degurba <- left_join(lau_geom, degurba, by = c("GISCO_ID" = "EU LAU CODE")) 
+
+
+#...extract only cities (1) and towns and suburbs (2) and do some attribute cleaning
+lau_degurba_1_2 <- lau_degurba %>% 
+  filter(DEGURBA < 3) %>% 
+  rename(uea_lau_km2 = AREA_KM2) %>% 
+  select(
+    
+    GISCO_ID,
+    CNTR_CODE,
+    LAU_NAME,
+    DEGURBA,
+    uea_lau_km2
+    
+  )
+
+
+# Then we compute the Urban Ecosystem Area (UEA) within the LAU. 
+uea_ucuc <- exact_extract(ucuc,
+                                 lau_degurba_1_2,
+                                 fun         = "count",
+                                 append_cols = c("GISCO_ID"),
+                                 progress = FALSE)
+
+# The pixel count reflects the coverage fraction. In addition, because we used the 1x1km ucuc layer, pixel size equals 1 km² and, hence, the count equals the area in km².
+
+uea_ucuc <- uea_ucuc %>% rename(uea_ucuc_km2 = "count")
+ 
+# Join the computed area back to the LAU vector layer
+lau_degurba_1_2 <- left_join(lau_degurba_1_2,
+                                 uea_ucuc,
+                                 by = "GISCO_ID")
+
+
+
+```
+
+
+## 3. Masking of WVL data
+
+Now that we have our combined urban centres and urban clusters layer prepared we want to use this to mask the WVL. Therefore we first need to align the resolution of both layers. We thus resample the 1km UCUC from 1km to 5m resolution.
+
+```{r Mask WVL, warning=FALSE, message=FALSE}
+
+# Load the WVL 
+wvl <- rast( here("data", "WVL", "SWF_2021_005m_eu_03035_V01_R02", "SWF_2021_005m_eu_03035_V01_R02.tif"),
+            win = cntr_bb)
+
+
+# Next we resample the urban centres and urban clusters to the 5m resolution.
+# Note that you may also slice pixels using terra::disagg 
+# with a disaggregation factor of 200 (1000m / 5m = 200)
+# However this may entail additional cropping/extending steps to align with the ucuc mask.
+
+
+ucuc_5m <- terra::resample(ucuc,
+                           wvl,
+                           method = "near")
+
+# The disaggregated 5m raster can now be used as a mask
+wvl_ucuc <- mask(wvl,
+                 ucuc_5m)
+
+
+```
+
+
+## 4. Tree Canopy Cover (TCC) calculation with WVL
+
+The final tree canopy cover is calculated using exact_extract function from the exactextractr package (Baston 2023).
+
+This library allows for fractional pixel counting and is thus the most accurate tool for quantification of WVL pixels.
+
+Statistics can be viewed as table and map below.
+
+```{r Tree Canopy Cover quantification, warning=FALSE, message=FALSE}
+
+# Zonal statistics for full LAU extent
+wvl_lau_df <- exact_extract(wvl,
+                                 lau_degurba_1_2,
+                                 fun         = "mean", # For a binary raster, the mean equals the fraction covered.
+                                 append_cols = c("GISCO_ID", 
+                                                 "CNTR_CODE", 
+                                                 "LAU_NAME",
+                                                 "DEGURBA", 
+                                                 "uea_lau_km2",
+                                                 "uea_ucuc_km2"),
+                                 progress = FALSE)
+
+
+wvl_lau_df <- wvl_lau_df %>% 
+  mutate(wvl_lau_pct = mean*100) %>% 
+  select(GISCO_ID, wvl_lau_pct)
+
+
+
+# Zonal statistics for urban centres and urban clusters only
+wvl_ucuc_df <- exact_extract(wvl_ucuc,
+                                 lau_degurba_1_2,
+                                 fun         = "mean", # For a binary raster, the mean equals the fraction covered.
+                                 append_cols = c("GISCO_ID", 
+                                                 "CNTR_CODE", 
+                                                 "LAU_NAME",
+                                                 "DEGURBA", 
+                                                 "uea_lau_km2",
+                                                 "uea_ucuc_km2"),
+                                 progress = FALSE)
+
+
+wvl_ucuc_df <- wvl_ucuc_df %>% 
+  mutate(wvl_ucuc_pct = mean*100) %>% 
+  select(GISCO_ID, wvl_ucuc_pct)
+
+# Combine the two computations 
+tcc_stats <- left_join(wvl_lau_df,  wvl_ucuc_df, by = "GISCO_ID")
+
+# Join to the LAU vector layer
+tcc <- left_join(lau_degurba_1_2,  tcc_stats, by = "GISCO_ID")
+
+# Show the final results
+tcc %>% st_drop_geometry() %>%  
+  select(GISCO_ID, LAU_NAME, DEGURBA, uea_lau_km2, uea_ucuc_km2, wvl_lau_pct, wvl_ucuc_pct)
+```
+
+
+```{r Tree Canopy Cover leaflet, warning=FALSE, message=FALSE, echo=FALSE}
+
+# Reproject for display in leaflet
+tcc_epsg4326 <- st_transform(tcc, "EPSG:4326" )
+
+# Set colouring
+pal_dgurba <- colorFactor(
+  palette = c("red", "yellow"),
+  domain = c(1, 2)
+)
+
+
+# Add a leaflet for display
+leaflet(tcc_epsg4326) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addRasterImage(
+    ucuc_5m,
+    colors = c("#f03b20", "#feb24c"),
+    opacity = 1,
+    project = TRUE,
+    group = "UCUC"
+  ) %>% 
+  addRasterImage(
+    wvl_ucuc,
+    colors = c("transparent", "#75dd00"),
+    opacity = 1,
+    project = TRUE,
+    group = "WVL - UCUC"
+  ) %>% 
+
+  addPolygons(
+    fillColor = ~pal_dgurba(DEGURBA),
+    fillOpacity = 0.7,
+    color = "#444444",
+    weight = 1,
+    group = "LAU",
+    label = ~lapply(
+      paste0(
+        "<b>LAU name:</b> ", tcc_epsg4326$LAU_NAME, "<br>",
+        "<b>LAU area:</b> ", round(uea_lau_km2, 2), " km²<br>",
+        "<b>UCUC area:</b> ", round(uea_ucuc_km2, 2), " km²<br>",
+        "<b>TCC/WVL LAU:</b> ", round(wvl_lau_pct, 1), "%<br>",
+        "<b>TCC/WVL UCUC:</b> ", round(wvl_ucuc_pct, 1), "%"
+      ),
+      htmltools::HTML
+    ),
+    highlightOptions = highlightOptions(
+      weight = 3,
+      color = "black",
+      bringToFront = TRUE
+    )
+  ) %>%
+  addLegend(
+    position = "bottomright",
+    colors = c("red", "yellow"),
+    labels = c(
+                "1 - Urban Centre",
+                "2 - Urban Cluster"
+              ),
+    title = "Degree of Urbanisation",
+    opacity = 1
+  ) %>% 
+    leaflet::addLayersControl(
+    overlayGroups = c(
+      "LAU",
+      "UCUC",
+      "WVL - UCUC"
+    ),
+    options = layersControlOptions(collapsed = FALSE)
+  ) %>% 
+  leaflet::hideGroup(c("WVL - UCUC", "UCUC"))
+
+
+```
+
+
