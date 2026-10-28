@@ -29,6 +29,7 @@ Combining Sentinel Hub with third-party data sources:
 ### `use_cases/`
 End-to-end examples applying Sentinel Hub to real-world problems:
 - [air_pollution_statistics.ipynb](use_cases/air_pollution_statistics.ipynb)
+- [clms_lst_landsat_sharpening.ipynb](use_cases/clms_lst_landsat_sharpening.ipynb)
 - [deforestation_monitoring_with_xarray.ipynb](use_cases/deforestation_monitoring_with_xarray.ipynb)
 - [ice_monitoring.ipynb](use_cases/ice_monitoring.ipynb)
 - [soil_erosion_risk.ipynb](use_cases/soil_erosion_risk.ipynb)
