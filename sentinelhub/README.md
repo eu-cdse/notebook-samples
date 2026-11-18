@@ -25,6 +25,7 @@ Introductory notebooks covering the core Sentinel Hub APIs and workflows:
 Combining Sentinel Hub with third-party data sources:
 - [CLMS_data_with_Process_Statistical_APIs.ipynb](data_integration/CLMS_data_with_Process_Statistical_APIs.ipynb) — Copernicus Land Monitoring Service data.
 - [ERA5_data_access.ipynb](data_integration/ERA5_data_access.ipynb) — ERA5 climate reanalysis data.
+- [ship_detection_and_ais_identification.ipynb](data_integration/ship_detection_and_ais_identification.ipynb) — vessel detection with Sentinel-2, matched against Global Fishing Watch AIS data.
 
 ### `use_cases/`
 End-to-end examples applying Sentinel Hub to real-world problems:
@@ -32,6 +33,7 @@ End-to-end examples applying Sentinel Hub to real-world problems:
 - [clms_lst_landsat_sharpening.ipynb](use_cases/clms_lst_landsat_sharpening.ipynb)
 - [deforestation_monitoring_with_xarray.ipynb](use_cases/deforestation_monitoring_with_xarray.ipynb)
 - [ice_monitoring.ipynb](use_cases/ice_monitoring.ipynb)
+- [sentinelhub_clms_hr_water_snow_ice.ipynb](use_cases/sentinelhub_clms_hr_water_snow_ice.ipynb)
 - [soil_erosion_risk.ipynb](use_cases/soil_erosion_risk.ipynb)
 
 ### `workshops/`
