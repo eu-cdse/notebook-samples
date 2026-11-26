@@ -43,6 +43,12 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          submodules: true
+          persist-credentials: false
+
+      - name: Prepare OpenEO submodule
+        run: bash tests/.prepare-submodules.sh "$GITHUB_WORKSPACE"
 
       # Login to CloudFerro Docker registry
       - name: Docker Login
@@ -78,15 +84,15 @@ jobs:
       - name: Run geo tests
         if: success() || failure()
         run: |
-          $GITHUB_WORKSPACE/.test-samples.sh geo ${{ env.container_id }}
+          tests/.test-samples.sh geo "$container_id" "$GITHUB_WORKSPACE"
       - name: Run Sentinelhub tests
         if: success() || failure()
         run: |
-          $GITHUB_WORKSPACE/.test-samples.sh sentinelhub ${{ env.container_id }}
+          tests/.test-samples.sh sentinelhub "$container_id" "$GITHUB_WORKSPACE"
       - name: Run OpenEO tests
         if: success() || failure()
         run: |
-          $GITHUB_WORKSPACE/.test-samples.sh openeo ${{ env.container_id }}
+          tests/.test-samples.sh openeo "$container_id" "$GITHUB_WORKSPACE"
       - name: Stop JupyterLab container
         if: success() || failure()
         run: |

@@ -38,11 +38,16 @@ E.g. for OpenEO:
 
 ### Automated testing
 
-If you want your sample to be automatically tested, add it to the `.tests` file. A GitHub action will pull the
-Jupyterlab container and automatically test the listed notebook samples.
+To test a sample in CI, add its repository-relative notebook path to the root `.tests` file, one path per line.
+The first directory selects the kernel (`geo`, `sentinelhub`, or `openeo`). Keep the full path for nested notebooks,
+for example `openeo/python/10_getting-started/getting-started.ipynb`.
 
-Mind that in case of automated testing samples can't depend on interactive input, like specifying user credentials. If you need
-credentials to run the notebook, please notify one of the admins.
+CI sets the `openeo` kernelspec on all Python notebooks in the runner's OpenEO checkout. It leaves
+non-Python notebooks unchanged and runs only the notebooks listed in `.tests`.
+
+Samples must run without interactive input. For OpenEO, prefer `authenticate_oidc()` over an explicitly interactive
+login method: the OpenEO Python client (0.18.0 or newer) uses the client credentials supplied by CI in the
+environment. If a notebook needs other credentials, please notify one of the admins.
 
 If you encounter certain notebook samples in the testing pipeline that are failing that were not changed in your pull request.
 Please notify the owner of the sample.

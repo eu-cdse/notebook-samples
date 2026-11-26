@@ -1,0 +1,3 @@
+[submodule "openeo"]
+	path = openeo
+	url = https://github.com/Open-EO/openeo-community-examples.git
